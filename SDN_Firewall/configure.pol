@@ -1,0 +1,127 @@
+# CS 6250 Sprint 2023 - SDN Firewall Project with POX
+# build hackers-44
+#
+# This file contains the rules for the firewall as specified in the Project Documentation.  
+#
+# Rule Format:
+# RuleNumber,Action,Source MAC,Destination MAC,Source IP,Destination IP,Protocol,Source Port,Destination Port,Comment/Note
+# RuleNumber = this is a rule number to help you track a particular rule - it is not used in the firewall implementation
+# Action = Block or Allow , Allow Rules need to take precedence over Block Rules
+# Source / Destination MAC address in form of xx:xx:xx:xx:xx:xx
+# Source / Destination IP Address in form of xxx.xxx.xxx.xxx/xx in CIDR notation
+# Protocol = integer IP protocol number per IANA (0-254)
+# Source / Destination Port = if Protocol is TCP or UDP, this is the Application Port Number per IANA
+# Comment/Note = this is for your use in tracking rules.
+#
+# Any field not being used for a match should have a '-' character as it's entry (except for RuleNumber/Comment)
+# Do not pad any of the entries (i.e., have a rule like:  1, Block, -, -,...)
+#
+# Warning:  For the IP address, you need to specify an appropriate network address
+# that matches the subnet mask you are using.  For instance, if you want to use a /16
+# subnet mask, then the IP address must be x.x.0.0.  For example, a proper address to 
+# reference a 192.168.10.x/24 network would be 192.168.10.0/24.  A single host
+# is addressed as a single IP address with a /32.  In other words, the host bit for a 
+# subnet other than /32 must be 0.
+#
+# Example Rules:
+#1,Block,-,-,10.0.0.1/32,10.0.1.0/24,6,-,80,Block 10.0.0.1 from accessing a web server on the 10.0.1.0/24 network
+#2,Allow,-,-,10.0.0.1/32,10.0.1.125/32,6,-,80,Allow 10.0.0.1 to access a web server on 10.0.1.125 overriding previous rule
+
+# Task 1: DNS Servers
+1,Allow,-,-,-,10.0.0.1/32,6,-,853,Allow public access to HQ1 DNS server (TCP)
+2,Allow,-,-,-,10.0.0.1/32,17,-,853,Allow public access to HQ1 DNS server (UDP)
+
+3,Allow,-,-,10.0.0.0/24,10.0.0.2/32,6,-,853,Allow HQ network access to hq2 DNS server (TCP)
+4,Allow,-,-,10.0.0.0/24,10.0.0.2/32,17,-,853,Allow HQ network access to hq2 DNS server (UDP)
+
+5,Allow,-,-,10.0.1.0/24,10.0.0.2/32,6,-,853,Allow US network access to hq2 DNS server (TCP)
+6,Allow,-,-,10.0.1.0/24,10.0.0.2/32,17,-,853,Allow US network access to hq2 DNS server (UDP)
+
+7,Allow,-,-,10.0.20.0/24,10.0.0.2/32,6,-,853,Allow India network access to hq2 DNS server (TCP)
+8,Allow,-,-,10.0.20.0/24,10.0.0.2/32,17,-,853,Allow India network access to hq2 DNS server (UDP)
+
+9,Allow,-,-,10.0.30.0/24,10.0.0.2/32,6,-,853,Allow China network access to hq2 DNS server (TCP)
+10,Allow,-,-,10.0.30.0/24,10.0.0.2/32,17,-,853,Allow China network access to hq2 DNS server (UDP)
+
+11,Allow,-,-,10.0.40.0/24,10.0.0.2/32,6,-,853,Allow UK network access to hq2 DNS server (TCP)
+12,Allow,-,-,10.0.40.0/24,10.0.0.2/32,17,-,853,Allow UK network access to hq2 DNS server (UDP)
+
+13,Block,-,-,-,10.0.0.2/32,6,-,853,Block access to hq2 DNS server (TCP)
+14,Block,-,-,-,10.0.0.2/32,17,-,853,Block access to hq2 DNS server (UDP)
+
+# Task 2: DNS Servers
+15,Allow,-,-,10.0.1.33/32,10.0.0.60/32,6,-,1194,Allow us3 access to hq3 VPN server (TCP)
+16,Allow,-,-,10.0.1.33/32,10.0.0.60/32,17,-,1194,Allow us3 access to hq3 VPN server (UDP)
+
+17,Allow,-,-,10.0.20.3/32,10.0.0.60/32,6,-,1194,Allow in3 access to hq3 VPN server (TCP)
+18,Allow,-,-,10.0.20.3/32,10.0.0.60/32,17,-,1194,Allow in3 access to hq3 VPN server (UDP)
+
+19,Allow,-,-,10.0.30.3/32,10.0.0.60/32,6,-,1194,Allow cn3 access to hq3 VPN server (TCP)
+20,Allow,-,-,10.0.30.3/32,10.0.0.60/32,17,-,1194,Allow cn3 access to hq3 VPN server (UDP)  
+
+21,Allow,-,-,10.0.40.129/32,10.0.0.60/32,6,-,1194,Allow uk3 access to hq3 VPN server (TCP)
+22,Allow,-,-,10.0.40.129/32,10.0.0.60/32,17,-,1194,Allow uk3 access to hq3 VPN server (UDP)
+
+23,Block,-,-,-,10.0.0.60/32,6,-,1194,Block access to hq3 from any other host (TCP)
+24,Block,-,-,-,10.0.0.60/32,17,-,1194,Block access to hq3 from any other host (UDP)
+
+# Task 3: ICMP
+25,Allow,-,-,-,10.0.0.0/24,1,-,-,Allow ICMP ping to HQ network from any host
+26,Block,-,-,10.0.1.0/24,-,1,-,-,Block ICMP ping to US network
+27,Block,-,-,10.0.20.0/24,-,1,-,-,Block ICMP ping to India network
+28,Block,-,-,10.0.30.0/24,-,1,-,-,Block ICMP ping to China network
+29,Block,-,-,10.0.40.0/24,-,1,-,-,Block ICMP ping to UK network
+
+# Task 4: Remote Connection Servers
+30,Block,-,-,-,10.0.0.0/24,6,-,3389,Block external access to Remote Destop on HQ network 
+31,Block,-,-,-,10.0.0.0/24,6,-,5900,Block external access to VNC on HQ network
+
+32,Block,-,-,-,10.0.1.0/24,6,-,3389,Block external access to Remote Destop on US network 
+33,Block,-,-,-,10.0.1.0/24,6,-,5900,Block external access to VNC on US network
+
+34,Block,-,-,-,10.0.20.0/24,6,-,3389,Block external access to Remote Destop on India network 
+35,Block,-,-,-,10.0.20.0/24,6,-,5900,Block external access to VNC on India network
+
+36,Block,-,-,-,10.0.30.0/24,6,-,3389,Block external access to Remote Destop on China network 
+37,Block,-,-,-,10.0.30.0/24,6,-,5900,Block external access to VNC on china network
+
+38,Block,-,-,-,10.0.40.0/24,6,-,3389,Block external access to Remote Destop on UK network 
+39,Block,-,-,-,10.0.40.0/24,6,-,5900,Block external access to VNC on UK network
+
+40,Allow,-,-,10.0.1.0/24,10.0.0.0/24,6,-,3389,Allow US network access to Remote Destop on HQ network 
+41,Allow,-,-,10.0.1.0/24,10.0.0.0/24,6,-,5900,Allow US network access to VNC on HQ network
+
+42,Allow,-,-,10.0.20.0/24,10.0.0.0/24,6,-,3389,Allow India network access to Remote Destop on HQ network 
+43,Allow,-,-,10.0.20.0/24,10.0.0.0/24,6,-,5900,Allow India network access to VNC on HQ network
+
+44,Allow,-,-,10.0.30.0/24,10.0.0.0/24,6,-,3389,Allow China network access to Remote Destop on HQ network 
+45,Allow,-,-,10.0.30.0/24,10.0.0.0/24,6,-,5900,Allow China network access to VNC on HQ network
+
+46,Allow,-,-,10.0.40.0/24,10.0.0.0/24,6,-,3389,Allow UK network access to Remote Destop on HQ network 
+47,Allow,-,-,10.0.40.0/24,10.0.0.0/24,6,-,5900,Allow UK network access to VNC on HQ network
+
+# Task 5: Micro Webservice
+
+48,Block,-,-,10.0.40.128/32,10.0.1.33/32,6,-,8510,Block uk2 from accessing us3
+49,Block,-,-,10.0.40.128/32,10.0.1.34/32,6,-,8510,Block uk2 from accessing us4
+
+50,Block,-,-,10.0.40.129/32,10.0.1.33/32,6,-,8510,Block uk3 from accessing us3
+51,Block,-,-,10.0.40.129/32,10.0.1.34/32,6,-,8510,Block uk3 from accessing us4
+
+52,Block,-,-,10.0.40.130/32,10.0.1.33/32,6,-,8510,Block uk4 from accessing us3
+53,Block,-,-,10.0.40.130/32,10.0.1.34/32,6,-,8510,Block uk4 from accessing us4
+
+54,Block,-,-,10.0.40.131/32,10.0.1.33/32,6,-,8510,Block uk5 from accessing us3
+55,Block,-,-,10.0.40.131/32,10.0.1.34/32,6,-,8510,Block uk5 from accessing us4
+
+56,Block,-,-,10.0.20.126/32,10.0.1.33/32,6,-,8510,Block in4 from accessing us3
+57,Block,-,-,10.0.20.126/32,10.0.1.34/32,6,-,8510,Block in4 from accessing us4
+
+58,Block,-,-,10.0.20.125/32,10.0.1.33/32,6,-,8510,Block in5 from accessing us3
+59,Block,-,-,10.0.20.125/32,10.0.1.34/32,6,-,8510,Block in5 from accessing us4
+
+60,Block,-,-,10.0.1.125/32,10.0.1.33/32,6,-,8510,Block us5 from accessing us3
+61,Block,-,-,10.0.1.125/32,10.0.1.34/32,6,-,8510,Block us5 from accessing us4
+
+62,Block,-,-,10.0.0.220/32,10.0.1.33/32,6,-,8510,Block hq5 from accessing us3
+63,Block,-,-,10.0.0.220/32,10.0.1.34/32,6,-,8510,Block hq5 from accessing us4
